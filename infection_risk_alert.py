@@ -61,8 +61,7 @@ def send_email(subject, body):
 # BUILD EMAIL CONTENT
 
 def build_email_text(mode_risk, mode_cluster, latest):
-    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+    
     subject = f"Infection Risk Update – {mode_risk}"
 
     body = f"""
