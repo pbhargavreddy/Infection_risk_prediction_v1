@@ -9,47 +9,31 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
 
-# ============================================================
-# CLEAN PATHS (NO SPACES, MATCHES GITHUB)
-# ============================================================
-
 SCALER_PATH = "model_files/new_scaler.pkl"
 PCA_PATH = "model_files/new_pca.pkl"
 MODEL_PATH = "model_files/new_model.pkl"
 
-
-# ============================================================
 # THINGSPEAK CONFIG
-# ============================================================
 
 READ_CHANNEL_ID = os.getenv("READ_CHANNEL_ID")
 READ_API_KEY = os.getenv("READ_API_KEY")
 PREDICTION_WRITE_API_KEY = os.getenv("PREDICTION_WRITE_API_KEY")
 
-
-# ============================================================
-# EMAIL CONFIG (FROM GITHUB SECRETS)
-# ============================================================
+# EMAIL CONFIG
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EMAIL_SENDER = os.getenv("EMAIL_SENDER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")   # GitHub Secret
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
 
-
-# ============================================================
 # LOAD MODELS
-# ============================================================
 
 scaler = joblib.load(SCALER_PATH)
 pca = joblib.load(PCA_PATH)
 model = joblib.load(MODEL_PATH)
 
-
-# ============================================================
 # HELPERS
-# ============================================================
 
 def safe_float(x):
     try:
@@ -74,10 +58,7 @@ def send_email(subject, body):
     except Exception as e:
         print("Email failed:", e)
 
-
-# ============================================================
 # BUILD EMAIL CONTENT
-# ============================================================
 
 def build_email_text(mode_risk, mode_cluster, latest):
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -85,7 +66,6 @@ def build_email_text(mode_risk, mode_cluster, latest):
     subject = f"Infection Risk Update – {mode_risk}"
 
     body = f"""
-Time: {time_now}
 Predicted Risk: {mode_risk}
 Cluster: {mode_cluster}
 
@@ -103,10 +83,7 @@ https://thingspeak.com/channels/{READ_CHANNEL_ID}
 
     return subject, body
 
-
-# ============================================================
 # FETCH 20 SENSOR READINGS
-# ============================================================
 
 url = (
     f"https://api.thingspeak.com/channels/{READ_CHANNEL_ID}/feeds.json"
@@ -120,9 +97,6 @@ if not feeds:
     print("No data found. Exiting.")
     exit()
 
-
-# Build dataframe with CORRECT ORDER:
-# temp, humidity, pressure, dust, co2, tvoc
 
 rows = []
 for f in feeds:
@@ -138,9 +112,7 @@ for f in feeds:
 df = pd.DataFrame(rows)
 
 
-# ============================================================
 # PREPROCESS + PREDICT
-# ============================================================
 
 scaled = scaler.transform(df)
 pca_out = pca.transform(scaled)
@@ -156,10 +128,7 @@ mode_cluster = int(mode(predictions, keepdims=False).mode)
 mode_risk = cluster_to_risk[mode_cluster]
 latest = df.iloc[-1]
 
-
-# ============================================================
 # SEND PREDICTION TO THINGSPEAK
-# ============================================================
 
 update_payload = {
     "api_key": PREDICTION_WRITE_API_KEY,
@@ -181,9 +150,7 @@ update_resp = requests.post(
 print("ThingSpeak response:", update_resp.text)
 
 
-# ============================================================
-# EMAIL ALERT (EVERY 5-MIN RUN)
-# ============================================================
+# EMAIL ALERT
 
 subject, body = build_email_text(mode_risk, mode_cluster, latest)
 send_email(subject, body)
