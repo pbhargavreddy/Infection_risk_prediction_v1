@@ -76,13 +76,11 @@ def build_email_text(mode_risk, mode_cluster, latest):
 
     # Email body
     body = f"""
-Time Now (IST): {time_now}
-Sensor Timestamp (IST): {sensor_time_ist}
-
+    
 Predicted Risk: {mode_risk}
-Cluster: {mode_cluster}
 
-Latest Sensor Readings:
+
+Latest Sensor Readings at Time ({sensor_time_ist}):
 Temperature: {latest['temp']}
 Humidity: {latest['humidity']}
 Pressure: {latest['pressure']}
