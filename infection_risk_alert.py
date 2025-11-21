@@ -61,26 +61,23 @@ def send_email(subject, body):
 def to_ist(utc_time_str):
     utc_time = datetime.strptime(utc_time_str, "%Y-%m-%dT%H:%M:%SZ")
     ist_time = utc_time + timedelta(hours=5, minutes=30)
-    return ist_time.strftime("%Y-%m-%d %H:%M:%S")
+    return ist_time.strftime("%d-%m-%y %I:%M:%S %p")
 
 
 def build_email_text(mode_risk, mode_cluster, latest):
     # Convert UTC timestamp from ThingSpeak to IST
     sensor_time_ist = to_ist(latest["created_at"])
     
-    # Current system time (IST)
-    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     # Email subject
     subject = f"Infection Risk Update – {mode_risk}"
 
     # Email body
     body = f"""
-    
+
 Predicted Risk: {mode_risk}
 
 
-Latest Sensor Readings at Time ({sensor_time_ist}):
+Latest Sensor Readings at Time({sensor_time_ist}):
 Temperature: {latest['temp']}
 Humidity: {latest['humidity']}
 Pressure: {latest['pressure']}
@@ -93,7 +90,6 @@ https://thingspeak.com/channels/{READ_CHANNEL_ID}
 """
 
     return subject, body
-
 
 # FETCH 20 SENSOR READINGS
 
