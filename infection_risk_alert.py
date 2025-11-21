@@ -6,7 +6,7 @@ from scipy.stats import mode
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime
+from datetime import datetime,timedelta
 
 
 SCALER_PATH = "model_files/new_scaler.pkl"
@@ -58,13 +58,27 @@ def send_email(subject, body):
     except Exception as e:
         print("Email failed:", e)
 
-# BUILD EMAIL CONTENT
+def to_ist(utc_time_str):
+    utc_time = datetime.strptime(utc_time_str, "%Y-%m-%dT%H:%M:%SZ")
+    ist_time = utc_time + timedelta(hours=5, minutes=30)
+    return ist_time.strftime("%Y-%m-%d %H:%M:%S")
+
 
 def build_email_text(mode_risk, mode_cluster, latest):
+    # Convert UTC timestamp from ThingSpeak to IST
+    sensor_time_ist = to_ist(latest["created_at"])
     
+    # Current system time (IST)
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Email subject
     subject = f"Infection Risk Update – {mode_risk}"
 
+    # Email body
     body = f"""
+Time Now (IST): {time_now}
+Sensor Timestamp (IST): {sensor_time_ist}
+
 Predicted Risk: {mode_risk}
 Cluster: {mode_cluster}
 
@@ -81,6 +95,7 @@ https://thingspeak.com/channels/{READ_CHANNEL_ID}
 """
 
     return subject, body
+
 
 # FETCH 20 SENSOR READINGS
 
