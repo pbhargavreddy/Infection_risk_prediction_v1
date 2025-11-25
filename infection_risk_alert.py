@@ -9,9 +9,9 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime,timedelta
 
 
-SCALER_PATH = "model_files/new_scaler.pkl"
-PCA_PATH = "model_files/new_pca.pkl"
-MODEL_PATH = "model_files/new_model.pkl"
+SCALER_PATH = "model_files/scaler.pkl"
+PCA_PATH = "model_files/pca.pkl"
+MODEL_PATH = "model_files/model.pkl"
 
 # THINGSPEAK CONFIG
 
