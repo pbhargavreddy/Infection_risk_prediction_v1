@@ -1,5 +1,10 @@
 # Intelligent Airborne Infection Risk Prediction using IoT and Machine Learning
 
+##
+
+For more clear details view : https://ieeexplore.ieee.org/document/11210669
+For documentation refer : https://drive.google.com/file/d/1Nj7VYo_chdG_fk18MIZhCr329dg4Rccg/view?usp=drive_link
+
 ## Overview
 
 This project predicts the airborne infection risk of an indoor environment using real-time sensor data collected from an IoT system. Sensor readings are fetched from ThingSpeak, processed using a trained Machine Learning model, and classified into different infection risk levels. The prediction is uploaded back to ThingSpeak, and an automated email alert containing the latest sensor readings and predicted risk is sent to the user.
